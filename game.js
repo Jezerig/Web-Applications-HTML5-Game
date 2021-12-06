@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
+import VictoryScene from './victoryScene'
 
-// source: youtube.com/watch?v=F3gI2EEFDRo
+// source: youtube.com/watch?v=F3gI2EEFDRo (lecture material)
 let game; 
 
 const gameOptions = {
@@ -25,7 +26,7 @@ window.onload = function() {
                 }
             }
         },
-        scene: PlayGame
+        scene: [PlayGame, VictoryScene]
     }
     game = new Phaser.Game(config);
     window.focus();
@@ -44,7 +45,6 @@ class PlayGame extends Phaser.Scene {
         this.load.image('background', 'assets/backgroundColorDesert.png');
         //source: https://kenney.nl/assets/toon-characters-1
         this.load.spritesheet('character', 'assets/character_malePerson_sheet.png', {frameWidth: 96, frameHeight: 128});
-        this.load.image('restart', 'assets/restart.png');
     }
     
     create () {
@@ -60,8 +60,6 @@ class PlayGame extends Phaser.Scene {
         this.buttons = this.physics.add.group({
         });
 
-        this.restartButton = this.add.image(400, 250, 'restart')
-        this.restartButton.visible = false;
         let x_pos = 0;
         for(let i=0;i<4;i++) {
             this.platforms.create(x_pos, 600, "sand");
@@ -118,8 +116,8 @@ class PlayGame extends Phaser.Scene {
     }
 
     finishLevel() {
-        this.guideText.setText("You won!");
-        this.restartButton.visible = true;
+        this.scene.start("VictoryScene");
+
     }
 
 
