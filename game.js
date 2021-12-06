@@ -39,10 +39,12 @@ class PlayGame extends Phaser.Scene {
         //source: https://kenney.nl/assets/platformer-art-deluxe
         this.load.image('sand', 'assets/sand.png');
         this.load.image('spiketrap', 'assets/spikes.png');
+        this.load.image('red_endflag', 'assets/flagRed.png');
         //source: https://kenney.nl/assets/background-elements-redux
         this.load.image('background', 'assets/backgroundColorDesert.png');
         //source: https://kenney.nl/assets/toon-characters-1
         this.load.spritesheet('character', 'assets/character_malePerson_sheet.png', {frameWidth: 96, frameHeight: 128});
+        this.load.image('restart', 'assets/restart.png');
     }
     
     create () {
@@ -51,10 +53,15 @@ class PlayGame extends Phaser.Scene {
             immovable: true,
             allowGravity: false
         });
-
         this.traps = this.physics.add.group({
-        })
-        ;
+        });
+        this.endflags = this.physics.add.group({
+        });
+        this.buttons = this.physics.add.group({
+        });
+
+        this.restartButton = this.add.image(400, 250, 'restart')
+        this.restartButton.visible = false;
         let x_pos = 0;
         for(let i=0;i<4;i++) {
             this.platforms.create(x_pos, 600, "sand");
@@ -64,14 +71,24 @@ class PlayGame extends Phaser.Scene {
         this.platforms.create(x_pos, 600, "sand");
         x_pos = x_pos + 200
         this.traps.create(x_pos, 530, "spiketrap");
-        for(let i=0;i<4;i++) {
+        for(let i=0;i<3;i++) {
             this.platforms.create(x_pos, 600, "sand");
             x_pos = x_pos + 70
         }
-        
+        x_pos = x_pos - 30
+        this.endflags.create(x_pos, 530, "red_endflag");
+
+        this.guideText = this.add.text(400, 150, "0", {fontSize: "35px", fill: "#000"}).setOrigin(0.5);
+        this.guideText.setText("Get to the red flag!");
+
         this.character = this.physics.add.sprite(48, 450, "character");
         this.character.body.gravity.y = gameOptions.characterGravity;
+
         this.physics.add.collider(this.character, this.platforms);
+
+        this.physics.add.overlap(this.character, this.traps, this.deathByTrap, null, this);
+        this.physics.add.overlap(this.character, this.endflags, this.finishLevel, null, this);
+
         this.cursors = this.input.keyboard.createCursorKeys();
 
         this.anims.create({
@@ -95,6 +112,18 @@ class PlayGame extends Phaser.Scene {
         })
 
     }
+
+    deathByTrap() {
+        this.scene.start("PlayGame");
+    }
+
+    finishLevel() {
+        this.guideText.setText("You won!");
+        this.restartButton.visible = true;
+    }
+
+
+
     update() {
         if(this.cursors.left.isDown) {
             //flips the running animation
@@ -114,7 +143,7 @@ class PlayGame extends Phaser.Scene {
         }
 
         if(this.cursors.up.isDown && this.character.body.touching.down) {
-            this.character.setVelocityY(-gameOptions.characterGravity/2);
+            this.character.setVelocityY(-gameOptions.characterGravity/1.8);
         }
 
 
