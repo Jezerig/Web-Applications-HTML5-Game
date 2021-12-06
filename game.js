@@ -57,8 +57,6 @@ class PlayGame extends Phaser.Scene {
         });
         this.endflags = this.physics.add.group({
         });
-        this.buttons = this.physics.add.group({
-        });
 
         let x_pos = 0;
         for(let i=0;i<4;i++) {
@@ -75,6 +73,7 @@ class PlayGame extends Phaser.Scene {
         }
         x_pos = x_pos - 30
         this.endflags.create(x_pos, 530, "red_endflag");
+        
 
         this.guideText = this.add.text(400, 150, "0", {fontSize: "35px", fill: "#000"}).setOrigin(0.5);
         this.guideText.setText("Get to the red flag!");
